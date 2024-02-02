@@ -35,24 +35,39 @@ TEST_JSON_2 = {
     }
 }
 
+TEST_JSON_NO_MESSAGE_KEY = {
+   "some_key": [
+         "aaaaa",
+         "bbbbb"
+   ],
+   "another_key": [
+         "aaaaa",
+         "bbbbb"
+   ],
+   "last_key": {
+         "aaaaa": "some_val",
+         "bbbbb": "another_val"
+   }
+}
+
 EXPECTED_SCHEMA_1 = {
    "user": {
       "type": "dict",
       "tag": "",
       "description": "",
-      "required": True,
+      "required": False,
       "properties": {
          "id": {
             "type": "string",
             "tag": "",
             "description": "",
-            "required": True
+            "required": False
          },
          "title": {
             "type": "string",
             "tag": "",
             "description": "",
-            "required": True
+            "required": False
          }
       }
    },
@@ -60,31 +75,31 @@ EXPECTED_SCHEMA_1 = {
       "type": "integer",
       "tag": "",
       "description": "",
-      "required": True
+      "required": False
    },
    "acl": {
       "type": "enum",
       "tag": "",
       "description": "",
-      "required": True
+      "required": False
    },
    "publicFeed": {
       "type": "bool",
       "tag": "",
       "description": "",
-      "required": True
+      "required": False
    },
    "internationalCountries": {
       "type": "enum",
       "tag": "",
       "description": "",
-      "required": True
+      "required": False
    },
    "topTraderFeed": {
       "type": "bool",
       "tag": "",
       "description": "",
-      "required": True
+      "required": False
    }
 }
 

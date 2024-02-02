@@ -14,6 +14,9 @@ def resolve_dict(item: dict, output: dict, parent_key="")->dict:
     Returns:
         dict: A formatted dictionary representation of the output
     """
+    if not isinstance(item, dict):
+        raise Exception("Invalid JSON argument")
+    
     for key, val in item.items():
         value = ""
         current_key = f"{parent_key}.{key}" if parent_key else key
@@ -74,10 +77,13 @@ def parse_from_file(filepath: str)->dict:
     Returns:
         dict: the parsed dictionary/JSON
     """
+    if not os.path.exists(filepath):
+        raise Exception("Source path does not exist")
+    
     with open(file=filepath, mode="r", encoding="utf-8") as my_file:
         f = my_file.read()
         to_json = json.loads(f)
-        message = to_json.get("message")
+        message = to_json.get("message", {})
         output_data = resolve_dict(message, {})
                 
         return output_data
@@ -106,6 +112,9 @@ def get_all_json_files(path: str)->list:
     Returns:
         list: a list of all the json files
     """
+    if not os.path.exists(path):
+        raise Exception("Source path does not exist")
+    
     files = os.listdir(path)
     json_files = []
     for f in files:

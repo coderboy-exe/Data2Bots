@@ -5,10 +5,9 @@ import json
 from main import main
 
 from utils import resolve_dict, parse_from_file, write_to_file, get_all_json_files
-from constants import TEST_JSON_1, TEST_JSON_2, EXPECTED_OUTPUT_1, EXPECTED_OUTPUT_2
+from constants import TEST_JSON_1, TEST_JSON_2, TEST_JSON_NO_MESSAGE_KEY, EXPECTED_SCHEMA_1, EXPECTED_SCHEMA_2
 
 class TestUtils(unittest.TestCase):
-
     def setUp(self):
         self.src_folder = "test_data/data"
         self.dest_folder = "test_data/schema"
@@ -16,62 +15,54 @@ class TestUtils(unittest.TestCase):
         # Create temporary files and directories for testing
         write_to_file(TEST_JSON_1, self.src_folder, "test_data_1.json")
         write_to_file(TEST_JSON_2, self.src_folder, "test_data_2.json")
+        write_to_file(TEST_JSON_NO_MESSAGE_KEY, self.src_folder, "test_data_no_msg.json")
         
-    def test_get_all_json_files(self):
-        test_files_path = os.path.join(self.src_folder)
+    def test_get_all_json_files_exists(self):
         json_files = get_all_json_files(self.src_folder)
-        self.assertEqual(len(json_files), 2)
+        self.assertEqual(len(json_files), 3)
+   
+    def test_get_all_json_files_not_exists(self):
+        with self.assertRaises(Exception) as context:
+            get_all_json_files("non_existent_folder")
+            self.assertEqual(str(context.exception), "Source path does not exist")
 
-    def test_parse_fromfile(self):
+    def test_parse_from_file(self):
         file_path = os.path.join(self.src_folder, "test_data_1.json")
         file_path2 = os.path.join(self.src_folder, "test_data_2.json")
         content = parse_from_file(file_path)
         content2 = parse_from_file(file_path2)
         write_to_file(content, self.dest_folder, "test_schema_1.json")
         write_to_file(content2, self.dest_folder, "test_schema_2.json")
-        self.assertEqual(TEST_JSON_1.get("message"), content)
+        self.assertEqual(EXPECTED_SCHEMA_1, content)
+        self.assertEqual(EXPECTED_SCHEMA_2, content2)
+    
+    def test_parse_from_file_not_exists(self):
+        with self.assertRaises(Exception) as context:
+            file_path = "fake_file"
+            file_path2 = "another_fake"
+            content = parse_from_file(file_path)
+            content2 = parse_from_file(file_path2)
+            self.assertEqual(str(context.exception), "Source path does not exist")
         
-    # def test_write_to_file(self):
-    #     file_path_1 = os.path.join(self.src_folder, "test_schema_1.json")
-    #     file_path_2 = os.path.join(self.src_folder, "test_schema_2.json")
-    #     self.assertTrue(os.path.isfile(file_path_1))
-    #     self.assertTrue(os.path.isfile(file_path_2))
-   
+    def test_parse_from_file_no_message_key(self):
+        file_path = os.path.join(self.src_folder, "test_data_no_msg.json")
+        parsed = parse_from_file(file_path)
+        self.assertEqual(dict, type(parsed))
+        self.assertEqual(len(parsed), 0)
+        self.assertEqual(parsed, {})
         
-    # def test_main(self):
-    #     # Use the result of the write_to_file test to proceed with the main function
-    #     test_file_path = os.path.join(self.src_folder, "test_file_1")
-    #     dest_file_path = os.path.join(self.dest_folder, "test_file_schema")
-
-    #     # Run main using the test file
-    #     main(["", self.src_folder, self.dest_folder])
-
-    #     # Assert that the destination file was created successfully
-    #     self.assertTrue(os.path.isfile(dest_file_path))
-
-    #     # Read the content from the destination file for further testing
-    #     dest_content = read_from_file(dest_file_path)
-
-    #     # Assert additional conditions based on the expected structure of the destination file
-    #     # ...
+    def test_resolve_dict(self):
+        resolved = resolve_dict(TEST_JSON_1, {})
+        self.assertEqual(dict, type(resolved))
+    
+    def test_resolve_invalid_dict(self):
+        with self.assertRaises(Exception) as context:
+            invalid_json = ["test1", "test2"]
+            resolved = resolve_dict(invalid_json, {})
+            self.assertEqual(str(context.exception), "Invalid JSON argument")
     
 
-    # def tearDown(self):
-    #     # Clean up (delete) the temporary files
-    #     for f in os.listdir(self.src_folder):
-    #         file_path = os.path.join(self.src_folder, f)
-    #         if os.path.isfile(file_path):
-    #             os.remove(file_path)
-    #     os.rmdir(self.src_folder)
-        
-    #     # if self.dest_folder:
-    #     #     for f in os.listdir(self.dest_folder):
-    #     #         file_path = os.path.join(self.dest_folder, f)
-    #     #         if os.path.isfile(file_path):
-    #     #             os.remove(file_path)
-    #     # os.rmdir(self.dest_folder)
-        
-    #     os.rmdir("test_data")
+
 
 if __name__ == '__main__':
     unittest.main()
