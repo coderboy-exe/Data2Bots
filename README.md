@@ -12,7 +12,8 @@
 
 ## Overview
 
-A simple JSON file sniffer that reads .json files from a **source** folder, parses the files and dumps them in a **destination** folder 
+A simple JSON file sniffer that reads all .json files from a **source** folder, parses the "message" key inside files and dumps the parsed schema in a **destination** folder.
+
 
 ## Prerequisites
 
